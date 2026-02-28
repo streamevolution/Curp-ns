@@ -5,21 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscador de CURP Oficial</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f0f2f5; padding: 20px; }
-        .container { max-width: 550px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #333; }
-        input[type="text"] { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 5px; text-transform: uppercase; font-size: 16px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #0066cc; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #004c99; }
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background-color: #f4f6f8; 
+            padding: 20px; 
+            color: #333;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
+        h2 { 
+            text-align: center; 
+            color: #1a202c; 
+            margin-bottom: 25px;
+        }
         
-        .btn-descargar { background-color: #28a745; margin-top: 20px; display: none; }
-        .btn-descargar:hover { background-color: #218838; }
+        /* Estilos del Input y Botón */
+        input[type="text"] { 
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 15px; 
+            border: 1px solid #cbd5e0; 
+            border-radius: 6px; 
+            text-transform: uppercase; 
+            font-size: 16px; 
+            box-sizing: border-box; 
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #9D2449; /* Color Guinda Oficial */
+            outline: none;
+        }
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            background-color: #9D2449; /* Color Guinda Oficial */
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: background-color 0.3s;
+        }
+        button:hover { background-color: #7a1c39; }
+        
+        .btn-descargar { 
+            /* CORRECCIÓN: Cambiado de verde a Guinda Oficial */
+            background-color: #9D2449; 
+            margin-top: 25px; 
+            display: none; 
+        }
+        /* CORRECCIÓN: Color hover para el botón guinda */
+        .btn-descargar:hover { background-color: #7a1c39; }
 
         .mensaje { text-align: center; font-weight: bold; margin-top: 15px; color: #d9534f; }
         .cargando { color: #f0ad4e; }
-        .resultado { margin-top: 20px; padding: 20px; background-color: #e9ecef; border-radius: 5px; display: none; }
-        .resultado p { margin: 8px 0; font-size: 15px; border-bottom: 1px solid #d1d1d1; padding-bottom: 5px; }
-        .resultado strong { color: #333; display: inline-block; width: 180px; }
+
+        /* Estilos de las Tarjetas (Cards) */
+        .tarjetas-container { display: none; margin-top: 25px; }
+        .card { 
+            background: #ffffff; 
+            border-radius: 6px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08); 
+            margin-bottom: 20px; 
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        .card-header { 
+            background-color: #f7fafc; 
+            padding: 15px; 
+            font-weight: bold; 
+            font-size: 15px; 
+            color: #4a5568; 
+            border-bottom: 1px solid #e2e8f0; 
+            text-transform: uppercase;
+            border-left: 4px solid #9D2449; /* Detalle guinda a la izquierda */
+        }
+        .card-body { padding: 0 15px; }
+        
+        .data-row { 
+            display: flex; 
+            justify-content: space-between;
+            border-bottom: 1px solid #edf2f7; 
+            padding: 12px 0; 
+        }
+        .data-row:last-child { border-bottom: none; }
+        .data-label { 
+            width: 45%; 
+            font-weight: 600; 
+            color: #4a5568; 
+            font-size: 14px; 
+        }
+        .data-value { 
+            width: 55%; 
+            color: #1a202c; 
+            font-size: 14px; 
+            text-align: right;
+            word-wrap: break-word;
+        }
+
+        /* CORRECCIÓN: Modificado para forzar una sola línea SIN cortar el texto */
+        .no-wrap {
+            white-space: nowrap; /* Fuerza una sola línea */
+            /* Eliminados 'overflow: hidden' y 'text-overflow: ellipsis' para que se vea completo */
+        }
     </style>
 </head>
 <body>
@@ -31,20 +126,32 @@
 
     <div id="estadoMensaje" class="mensaje"></div>
 
-    <div id="cajaResultado" class="resultado">
-        <p><strong>CURP:</strong> <span id="resCurp"></span></p>
-        <p><strong>Nombre(s):</strong> <span id="resNombre"></span></p>
-        <p><strong>Primer Apellido:</strong> <span id="resApellido1"></span></p>
-        <p><strong>Segundo Apellido:</strong> <span id="resApellido2"></span></p>
-        <p><strong>Sexo:</strong> <span id="resSexo"></span></p>
-        <p><strong>Fecha de Nacimiento:</strong> <span id="resFechaNacimiento"></span></p>
-        <p><strong>Nacionalidad:</strong> <span id="resNacionalidad"></span></p>
-        <p><strong>Entidad de Nacimiento:</strong> <span id="resEntidadNacimiento"></span></p>
-        <p><strong>Documento Probatorio:</strong> <span id="resDoc"></span></p>
-        <p><strong>Año de registro:</strong> <span id="resAnio"></span></p>
-        <p><strong>Número de acta:</strong> <span id="resActa"></span></p>
-        <p><strong>Entidad de registro:</strong> <span id="resEntidad"></span></p>
-        <p><strong>Municipio de Registro:</strong> <span id="resMunicipio"></span></p>
+    <div id="cajaResultado" class="tarjetas-container">
+        
+        <div class="card">
+            <div class="card-header">Datos del solicitante</div>
+            <div class="card-body">
+                <div class="data-row"><div class="data-label">CURP:</div><div class="data-value no-wrap" id="resCurp"></div></div>
+                <div class="data-row"><div class="data-label">Nombre(s):</div><div class="data-value" id="resNombre"></div></div>
+                <div class="data-row"><div class="data-label">Primer Apellido:</div><div class="data-value" id="resApellido1"></div></div>
+                <div class="data-row"><div class="data-label">Segundo Apellido:</div><div class="data-value" id="resApellido2"></div></div>
+                <div class="data-row"><div class="data-label">Sexo:</div><div class="data-value" id="resSexo"></div></div>
+                <div class="data-row"><div class="data-label">Fecha de Nacimiento:</div><div class="data-value" id="resFechaNacimiento"></div></div>
+                <div class="data-row"><div class="data-label">Nacionalidad:</div><div class="data-value" id="resNacionalidad"></div></div>
+                <div class="data-row"><div class="data-label">Entidad de Nacimiento:</div><div class="data-value" id="resEntidadNacimiento"></div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Datos del documento probatorio</div>
+            <div class="card-body">
+                <div class="data-row"><div class="data-label">Documento Probatorio:</div><div class="data-value" id="resDoc"></div></div>
+                <div class="data-row"><div class="data-label">Año de registro:</div><div class="data-value" id="resAnio"></div></div>
+                <div class="data-row"><div class="data-label">Número de acta:</div><div class="data-value" id="resActa"></div></div>
+                <div class="data-row"><div class="data-label">Entidad de registro:</div><div class="data-value" id="resEntidad"></div></div>
+                <div class="data-row"><div class="data-label">Municipio de Registro:</div><div class="data-value" id="resMunicipio"></div></div>
+            </div>
+        </div>
         
         <button id="btnDescargarPDF" class="btn-descargar">⬇️ Descargar PDF Oficial</button>
     </div>
@@ -71,6 +178,7 @@
         mensaje.className = 'mensaje cargando';
 
         try {
+            // Asegúrate de que esta URL sea la de tu servidor Render
             const url = 'https://api-curp.onrender.com/scrape-curp?curp=' + curp;
             
             const respuesta = await fetch(url);
@@ -84,6 +192,7 @@
                 throw new Error("El servidor no devolvió datos. Es posible que la CURP sea incorrecta.");
             }
 
+            // Llenado de datos
             document.getElementById('resCurp').innerText = datos.curp;
             document.getElementById('resNombre').innerText = datos.nombre;
             document.getElementById('resApellido1').innerText = datos.primerApellido;
@@ -92,13 +201,14 @@
             document.getElementById('resFechaNacimiento').innerText = datos.fechaNacimiento;
             document.getElementById('resNacionalidad').innerText = datos.nacionalidad;
             document.getElementById('resEntidadNacimiento').innerText = datos.entidadNacimiento;
+            
             document.getElementById('resDoc').innerText = datos.docProbatorio;
             document.getElementById('resAnio').innerText = datos.anioRegistro;
             document.getElementById('resActa').innerText = datos.numeroActa;
             document.getElementById('resEntidad').innerText = datos.entidadRegistro;
             document.getElementById('resMunicipio').innerText = datos.municipioRegistro;
 
-            // Configurar el botón para que descargue el PDF real
+            // Botón PDF
             if (datos.pdfOficial) {
                 btnDescargarPDF.innerText = "⬇️ Descargar PDF Oficial";
                 btnDescargarPDF.onclick = function() {
@@ -113,7 +223,7 @@
             }
 
             mensaje.innerText = '';
-            cajaResultado.style.display = 'block';
+            cajaResultado.style.display = 'block'; // Mostrar las tarjetas
             btnDescargarPDF.style.display = 'block';
 
         } catch (error) {
