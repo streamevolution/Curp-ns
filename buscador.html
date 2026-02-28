@@ -9,8 +9,12 @@
         .container { max-width: 550px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         h2 { text-align: center; color: #333; }
         input[type="text"] { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 5px; text-transform: uppercase; font-size: 16px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #0066cc; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        button { width: 100%; padding: 12px; background-color: #0066cc; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold; }
         button:hover { background-color: #004c99; }
+        
+        .btn-descargar { background-color: #28a745; margin-top: 20px; display: none; }
+        .btn-descargar:hover { background-color: #218838; }
+
         .mensaje { text-align: center; font-weight: bold; margin-top: 15px; color: #d9534f; }
         .cargando { color: #f0ad4e; }
         .resultado { margin-top: 20px; padding: 20px; background-color: #e9ecef; border-radius: 5px; display: none; }
@@ -41,6 +45,8 @@
         <p><strong>Número de acta:</strong> <span id="resActa"></span></p>
         <p><strong>Entidad de registro:</strong> <span id="resEntidad"></span></p>
         <p><strong>Municipio de Registro:</strong> <span id="resMunicipio"></span></p>
+        
+        <button id="btnDescargarPDF" class="btn-descargar">⬇️ Descargar PDF Oficial</button>
     </div>
 </div>
 
@@ -49,8 +55,10 @@
         const curp = document.getElementById('curpInput').value.trim().toUpperCase();
         const mensaje = document.getElementById('estadoMensaje');
         const cajaResultado = document.getElementById('cajaResultado');
+        const btnDescargarPDF = document.getElementById('btnDescargarPDF');
 
         cajaResultado.style.display = 'none';
+        btnDescargarPDF.style.display = 'none';
         mensaje.innerText = '';
         mensaje.className = 'mensaje';
 
@@ -59,7 +67,7 @@
             return;
         }
 
-        mensaje.innerText = '⏳ Buscando en RENAPO, por favor espera unos segundos...';
+        mensaje.innerText = '⏳ Buscando y extrayendo documento original...';
         mensaje.className = 'mensaje cargando';
 
         try {
@@ -90,8 +98,23 @@
             document.getElementById('resEntidad').innerText = datos.entidadRegistro;
             document.getElementById('resMunicipio').innerText = datos.municipioRegistro;
 
+            // Configurar el botón para que descargue el PDF real
+            if (datos.pdfOficial) {
+                btnDescargarPDF.innerText = "⬇️ Descargar PDF Oficial";
+                btnDescargarPDF.onclick = function() {
+                    const enlace = document.createElement('a');
+                    enlace.href = 'data:application/pdf;base64,' + datos.pdfOficial;
+                    enlace.download = 'CURP_' + datos.curp + '.pdf';
+                    enlace.click();
+                };
+            } else {
+                btnDescargarPDF.innerText = "🖨️ Imprimir Datos (PDF no disponible)";
+                btnDescargarPDF.onclick = () => window.print();
+            }
+
             mensaje.innerText = '';
             cajaResultado.style.display = 'block';
+            btnDescargarPDF.style.display = 'block';
 
         } catch (error) {
             mensaje.innerText = `❌ Error: ${error.message}`;
