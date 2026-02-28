@@ -59,16 +59,18 @@
         mensaje.className = 'mensaje cargando';
 
         try {
-            // Puente HTTPS seguro para burlar a Cloudflare
-            const urlBackend = 'http://fsn1-de.cafirexos.com:5330/scrape-curp?curp=' + curp;
-const urlSegura = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(urlBackend);
-
+            // ENLACE DIRECTO A RENDER (Sin puentes)
+            const url = 'https://api-curp.onrender.com/scrape-curp?curp=' + curp;
             
-            const respuesta = await fetch(urlSegura);
+            const respuesta = await fetch(url);
             const datos = await respuesta.json();
 
-            if (!respuesta.ok) {
-                throw new Error(datos.error || 'Ocurrió un error al buscar la CURP.');
+            if (datos.error) {
+                throw new Error("El servidor reporta: " + datos.error);
+            }
+
+            if (!datos.nombre) {
+                throw new Error("El servidor no devolvió datos. Es posible que la CURP sea incorrecta.");
             }
 
             // Llenar los datos
