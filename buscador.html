@@ -179,7 +179,7 @@
 
         try {
             // Asegúrate de que esta URL sea la de tu servidor Render
-            const url = 'api-curp-production.up.railway.app/scrape-curp?curp=' + curp;
+            const url = 'https://api-curp-production.up.railway.app/scrape-curp?curp=' + curp;
             
             const respuesta = await fetch(url);
             const datos = await respuesta.json();
